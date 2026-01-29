@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Pharmaglow Admin</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#070a12;
+      --bg2:#0b1020;
+      --surface: rgba(255,255,255,.05);
+      --surface2: rgba(255,255,255,.07);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.70);
+
+      --primary:#22d3ee;
+      --primary2:#14b8a6;
+      --accent:#a3e635;
+
+      --border: rgba(234,240,255,.10);
+      --border2: rgba(34,211,238,.22);
+
+      --shadow: 0 18px 70px rgba(0,0,0,.55);
+
+      --r:18px;
+      --r2:14px;
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 650px at 15% 0%, rgba(34,211,238,.14), transparent 62%),
+        radial-gradient(900px 600px at 85% 10%, rgba(163,230,53,.10), transparent 55%),
+        radial-gradient(1200px 700px at 50% 120%, rgba(20,184,166,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg), #050712 55%, #04050c);
+    }
+    a{color:inherit;text-decoration:none}
+    .muted{color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .hide{display:none !important;}
+
+    /* Layout */
+    .app{
+      display:grid;
+      grid-template-columns: 290px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      position: sticky; top:0;
+      height: 100vh;
+      border-right: 1px solid rgba(234,240,255,.08);
+      background: rgba(7,10,18,.72);
+      backdrop-filter: blur(12px);
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      padding: 10px 10px;
+      border: 1px solid rgba(234,240,255,.08);
+      border-radius: var(--r);
+      background: rgba(255,255,255,.03);
+    }
+    .brand img{
+      width: 42px; height:42px; border-radius: 14px;
+      border:1px solid rgba(234,240,255,.10);
+      box-shadow: 0 12px 30px rgba(0,0,0,.45);
+      object-fit: cover;
+    }
+    .brand .title{font-weight: 1000; letter-spacing:-.01em;}
+    .brand .sub{font-size:.92rem; color: var(--muted); margin-top:2px;}
+
+    .sideSection{
+      border:1px solid rgba(234,240,255,.08);
+      border-radius: var(--r);
+      background: rgba(255,255,255,.03);
+      padding: 12px;
+    }
+    .sideSection h4{margin:0 0 8px; font-size: 13px; color: rgba(234,240,255,.88)}
+    .tokenRow{display:grid; gap:8px}
+
+    .input, .select{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: var(--r2);
+      border: 1px solid rgba(234,240,255,.12);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      outline:none;
+    }
+    .input:focus, .select:focus{
+      border-color: rgba(34,211,238,.45);
+      box-shadow:0 0 0 4px rgba(34,211,238,.14);
+    }
+
+    .nav{
+      display:grid; gap: 6px;
+    }
+    .nav a{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      color: rgba(234,240,255,.86);
+      transition: background .14s var(--ease), border-color .14s var(--ease), transform .14s var(--ease);
+    }
+    .nav a:hover{ background: rgba(255,255,255,.04); border-color: rgba(234,240,255,.10); transform: translateY(-1px);}
+    .nav a.active{
+      background: rgba(34,211,238,.10);
+      border-color: rgba(34,211,238,.30);
+      color: rgba(234,240,255,.98);
+      box-shadow: 0 0 0 1px rgba(34,211,238,.10) inset;
+    }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 14px; border-radius: var(--r2);
+      border:1px solid rgba(234,240,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text); font-weight:900; cursor:pointer;
+      transition: transform .12s var(--ease), box-shadow .12s var(--ease), border-color .12s var(--ease);
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-1px); border-color: rgba(234,240,255,.20); box-shadow:0 14px 34px rgba(0,0,0,.45);}
+    .btn:active{transform:translateY(0) scale(.99);}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(34,211,238,.96), rgba(20,184,166,.96));
+      color:#041018; border-color: rgba(34,211,238,.45);
+      box-shadow: 0 18px 50px rgba(34,211,238,.18);
+    }
+    .btn.ghost{background: rgba(255,255,255,.03);}
+    .btn.danger{border-color: rgba(244,63,94,.35); background: rgba(244,63,94,.08);}
+
+    /* Main */
+    .main{ padding: 18px 18px 40px; }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap: 12px; flex-wrap: wrap;
+      padding: 14px 16px;
+      border:1px solid rgba(234,240,255,.08);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .topbar::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(700px 240px at 20% 0%, rgba(34,211,238,.14), transparent 55%),
+        radial-gradient(700px 240px at 80% 0%, rgba(163,230,53,.10), transparent 55%);
+      opacity:.6; pointer-events:none;
+    }
+    .pageTitle{position:relative; display:flex; flex-direction:column; gap:4px;}
+    .pageTitle h1{margin:0; font-size: 26px; letter-spacing:-.02em;}
+    .pageTitle p{margin:0; color: var(--muted); font-size:.95rem;}
+    .topActions{position:relative; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px; border-radius:999px;
+      border:1px solid rgba(34,211,238,.22);
+      background: rgba(34,211,238,.08);
+      color: rgba(234,240,255,.92);
+      font-weight:900; font-size:.9rem;
+    }
+
+    /* KPI */
+    .kpis{
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+    .kpi{
+      border:1px solid rgba(234,240,255,.10);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow: 0 14px 38px rgba(0,0,0,.42);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+      transition: transform .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .kpi:hover{ transform: translateY(-3px); border-color: rgba(34,211,238,.20); box-shadow: var(--shadow); }
+    .kpi .label{color: var(--muted); font-weight:800; font-size:.92rem;}
+    .kpi .value{font-weight:1000; font-size: 24px; margin-top:6px; letter-spacing:-.02em;}
+    .kpi .hint{color: rgba(234,240,255,.58); font-size:.86rem; margin-top:4px;}
+
+    /* Panels */
+    .panel{
+      margin-top: 12px;
+      border:1px solid rgba(234,240,255,.10);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHeader{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(234,240,255,.08);
+      background: rgba(7,10,18,.35);
+      backdrop-filter: blur(10px);
+    }
+    .panelHeader h3{margin:0; font-size: 16px; letter-spacing:-.01em;}
+    .panelBody{ padding: 14px 16px; }
+
+    /* Tables */
+    .tableWrap{ overflow:auto; }
+    table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1040px;
+    }
+    th,td{
+      padding: 12px 12px;
+      text-align:left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(234,240,255,.08);
+      font-size:.95rem;
+      white-space: normal;
+    }
+    thead th{
+      position: sticky; top: 0;
+      background: rgba(7,10,18,.62);
+      backdrop-filter: blur(10px);
+      z-index: 1;
+      color: rgba(234,240,255,.92);
+      font-weight: 1000;
+      text-align:left;
+    }
+    tbody tr:hover{ background: rgba(34,211,238,.05); }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 900;
+      border: 1px solid rgba(234,240,255,.12);
+      background: rgba(255,255,255,.03);
+      width: fit-content;
+    }
+    .st-new{ border-color: rgba(34,211,238,.28); background: rgba(34,211,238,.10); }
+    .st-processing{ border-color: rgba(251,191,36,.28); background: rgba(251,191,36,.10); }
+    .st-done{ border-color: rgba(163,230,53,.28); background: rgba(163,230,53,.10); }
+
+    .rowActions{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .small{font-size:.9rem;}
+    .twoCol{display:grid; grid-template-columns: 1.1fr .9fr; gap: 12px;}
+
+    /* Forms */
+    .formGrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .field{ display:grid; gap:7px; }
+    .field label{ font-weight:900; font-size:.92rem; color: rgba(234,240,255,.92); }
+    .note{ margin-top: 8px; color: var(--muted); font-size:.92rem; }
+
+    /* Responsive */
+    @media (max-width: 1200px){
+      .kpis{ grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1050px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ height:auto; position: relative; }
+      .kpis{ grid-template-columns: repeat(2, 1fr); }
+      .formGrid{ grid-template-columns: 1fr; }
+      .twoCol{ grid-template-columns: 1fr; }
+      table{ min-width: 980px; }
+    }
+    @media (max-width: 560px){
+      .kpis{ grid-template-columns: 1fr; }
+      .brand .sub{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/logo.jpeg" alt="Pharmaglow">
+        <div>
+          <div class="title">Pharmaglow</div>
+          <div class="sub">Admin Dashboard • Dark Premium</div>
+        </div>
+      </div>
+
+      <div class="sideSection">
+        <h4>Admin Token</h4>
+        <div class="tokenRow">
+          <input class="input" id="token" placeholder="Paste Admin Token">
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn primary" id="saveToken" type="button">Save Token</button>
+            <button class="btn ghost" id="reloadAll" type="button">Reload</button>
+          </div>
+          <div class="muted small">Token is stored locally in your browser (LocalStorage).</div>
+        </div>
+      </div>
+
+      <div class="sideSection">
+        <h4>Menu</h4>
+        <nav class="nav">
+          <a href="#dashboard" class="active" data-page="dashboard">Dashboard</a>
+          <a href="#orders" data-page="orders">Orders</a>
+          <a href="#products" data-page="products">Products</a>
+          <a href="#analytics" data-page="analytics">Analytics</a>
+        </nav>
+      </div>
+
+      <div class="sideSection">
+        <h4>Behavior</h4>
+        <div class="muted small">
+          Orders with status <b>done</b> are hidden from the “Open Orders” list, but still counted in Total Orders/Revenue.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <div class="topbar">
+        <div class="pageTitle">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageDesc">Quick overview of orders and revenue.</p>
+        </div>
+        <div class="topActions">
+          <span class="pill" id="todayPill">Today</span>
+          <button class="btn primary" id="refreshBtn" type="button">↻ Refresh</button>
+          <span class="muted small" id="statusMsg">—</span>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <section id="dashboardPage">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">New Orders</div>
+            <div class="value" id="kpiNew">0</div>
+            <div class="hint">status = new</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Processing Orders</div>
+            <div class="value" id="kpiProcessing">0</div>
+            <div class="hint">status = processing</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Open Orders</div>
+            <div class="value" id="kpiTotalOpen">0</div>
+            <div class="hint">new + processing</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Open Revenue</div>
+            <div class="value" id="kpiRevenueOpen">0 LE</div>
+            <div class="hint">sum totals (open)</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Total Orders (All)</div>
+            <div class="value" id="kpiAllCount">0</div>
+            <div class="hint">includes done</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Total Revenue (All)</div>
+            <div class="value" id="kpiAllRevenue">0 LE</div>
+            <div class="hint">includes done</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panelHeader">
+            <h3>Latest Open Orders</h3>
+            <div class="rowActions">
+              <span class="muted small">Open orders only (done hidden)</span>
+            </div>
+          </div>
+          <div class="panelBody">
+            <div class="tableWrap">
+              <table>
+                <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="ordersBodyDashboard"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Orders -->
+      <section id="ordersPage" class="hide">
+        <div class="panel" style="margin-top:14px">
+          <div class="panelHeader">
+            <h3>Order Management</h3>
+            <div class="rowActions">
+              <input class="input" id="searchBox" placeholder="Search: name / phone / order id" style="width:260px">
+              <select class="select" id="statusFilter" style="width:190px">
+                <option value="open">Show: Open Only</option>
+                <option value="all">Show: All (including done)</option>
+                <option value="new">Status: new</option>
+                <option value="processing">Status: processing</option>
+                <option value="done">Status: done</option>
+              </select>
+              <div class="rowActions">
+                <label class="muted small">From</label>
+                <input class="input" id="fromDate" type="date" style="width:170px">
+                <label class="muted small">To</label>
+                <input class="input" id="toDate" type="date" style="width:170px">
+              </div>
+              <button class="btn ghost" id="applyFilters" type="button">Apply Filters</button>
+              <button class="btn ghost" id="clearFilters" type="button">Clear</button>
+            </div>
+          </div>
+          <div class="panelBody">
+            <div class="muted small" style="margin-bottom:10px">
+              Tip: Set status to <b>done</b> and click <b>Save</b> to archive (it disappears from Open view).
+            </div>
+
+            <div class="tableWrap">
+              <table>
+                <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="ordersBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products -->
+      <section id="productsPage" class="hide">
+        <div class="twoCol" style="margin-top:14px">
+          <div class="panel">
+            <div class="panelHeader">
+              <h3>Product List</h3>
+              <div class="rowActions">
+                <button class="btn ghost" id="reloadProducts" type="button">Reload Products</button>
+              </div>
+            </div>
+            <div class="panelBody">
+              <div class="tableWrap">
+                <table style="min-width:920px">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name (EN)</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Active</th>
+                      <th>Image</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productsBody"></tbody>
+                </table>
+              </div>
+              <div class="note">If your API does not support <span class="mono">action=products</span>, tell me and I will adjust to your exact Apps Script output.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panelHeader">
+              <h3>Add / Edit Product</h3>
+              <div class="rowActions">
+                <span class="muted small" id="productMsg">—</span>
+              </div>
+            </div>
+            <div class="panelBody">
+
+              <!-- ✅ FIXED: Active field kept inside .formGrid -->
+              <div class="formGrid">
+                <div class="field">
+                  <label>Product ID (unique)</label>
+                  <input class="input" id="p_id" placeholder="e.g. shampoo_dandruff">
+                </div>
+                <div class="field">
+                  <label>Category</label>
+                  <select class="select" id="p_category">
+                    <option value="hair">hair</option>
+                    <option value="skin">skin</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Name EN</label>
+                  <input class="input" id="p_name_en" placeholder="Anti-dandruff shampoo">
+                </div>
+                <div class="field">
+                  <label>Name AR (optional)</label>
+                  <input class="input" id="p_name_ar" placeholder="شامبو ضد القشرة">
+                </div>
+                <div class="field">
+                  <label>Price (LE)</label>
+                  <input class="input" id="p_price" type="number" min="0" placeholder="230">
+                </div>
+                <div class="field">
+                  <label>Image URL</label>
+                  <input class="input" id="p_image_url" placeholder="assets/products/anti-dandruff-shampoo.jpg">
+                </div>
+
+                <div class="field">
+                  <label>Description EN</label>
+                  <textarea class="input" id="p_desc_en" rows="3" placeholder="Short product description (English)"></textarea>
+                </div>
+                <div class="field">
+                  <label>Description AR</label>
+                  <textarea class="input" id="p_desc_ar" rows="3" placeholder="وصف المنتج بالعربي"></textarea>
+                </div>
+                <div class="field">
+                  <label>Ingredients EN</label>
+                  <textarea class="input" id="p_ing_en" rows="3" placeholder="Ingredients list (English)"></textarea>
+                </div>
+                <div class="field">
+                  <label>Ingredients AR</label>
+                  <textarea class="input" id="p_ing_ar" rows="3" placeholder="المكونات بالعربي"></textarea>
+                </div>
+                <div class="field">
+                  <label>How to Use EN</label>
+                  <textarea class="input" id="p_use_en" rows="3" placeholder="How to use (English)"></textarea>
+                </div>
+                <div class="field">
+                  <label>How to Use AR</label>
+                  <textarea class="input" id="p_use_ar" rows="3" placeholder="طريقة الاستخدام بالعربي"></textarea>
+                </div>
+
+                <div class="field">
+                  <label>Active</label>
+                  <select class="select" id="p_active">
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="rowActions" style="margin-top:12px">
+                <button class="btn primary" id="upsertProduct" type="button">Save Product</button>
+                <button class="btn ghost" id="clearProductForm" type="button">Clear</button>
+                <button class="btn danger" id="deleteProduct" type="button">Delete</button>
+              </div>
+
+              <div class="note">Recommended: store images inside your GitHub repo under <span class="mono">assets/products/</span>.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics -->
+      <section id="analyticsPage" class="hide">
+        <div class="panel" style="margin-top:14px">
+          <div class="panelHeader">
+            <h3>Analytics</h3>
+            <div class="rowActions">
+              <select class="select" id="rangeSelect" style="width:220px">
+                <option value="7">Last 7 days</option>
+                <option value="14" selected>Last 14 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+              </select>
+              <button class="btn ghost" id="refreshCharts" type="button">Refresh Charts</button>
+            </div>
+          </div>
+          <div class="panelBody">
+            <div class="twoCol">
+              <div class="panel" style="margin-top:0">
+                <div class="panelHeader"><h3>Revenue by Day</h3></div>
+                <div class="panelBody">
+                  <canvas id="revChart" height="140"></canvas>
+                </div>
+              </div>
+              <div class="panel" style="margin-top:0">
+                <div class="panelHeader"><h3>Orders by Status</h3></div>
+                <div class="panelBody">
+                  <canvas id="statusChart" height="140"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel" style="margin-top:12px">
+              <div class="panelHeader"><h3>Top Customers (by total revenue)</h3></div>
+              <div class="panelBody">
+                <div class="tableWrap">
+                  <table style="min-width:820px">
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Orders</th>
+                        <th>Total Revenue</th>
+                      </tr>
+                    </thead>
+                    <tbody id="topCustomersBody"></tbody>
+                  </table>
+                </div>
+                <div class="note">This is computed from your orders list.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+  /***********************
+   * CONFIG
+   ***********************/
+  const API_URL = "https://script.google.com/macros/s/AKfycbwBB5uLYGNwuA3VNyhhxdPOofv8ByVoOJDsV93NeaUVrG6DwrKYYmMlXLChWVHLpQ/exec";
+
+  /***********************
+   * STATE
+   ***********************/
+  let ORDERS_ALL = [];
+  let PRODUCTS_ALL = [];
+  let revChart = null;
+  let statusChart = null;
+
+  const $ = (s)=>document.querySelector(s);
+  const $$ = (s)=>Array.from(document.querySelectorAll(s));
+
+  function setStatus(msg){ $("#statusMsg").textContent = msg || "—"; }
+
+  function money(n){ return `${Number(n||0)} LE`; }
+
+  function getToken(){ return localStorage.getItem("pg_admin_token") || ""; }
+  function setToken(v){ localStorage.setItem("pg_admin_token", v); }
+
+  function cleanPhone(raw){
+    const s = String(raw||"").trim();
+    // keep digits + plus
+    return s.replace(/[^\d+]/g,"");
+  }
+
+  function waLink(phone, message){
+    const p = cleanPhone(phone);
+    const to = p.startsWith("0") ? ("20"+p.slice(1)) : (p.startsWith("20") ? p : p); // Egypt convenience
+    const text = encodeURIComponent(message||"");
+    return `https://wa.me/${to}?text=${text}`;
+  }
+
+  // Best-effort date parsing for created_at coming from Google Sheet / Apps Script.
+  function parseCreatedAt(v){
+    if(!v) return null;
+    if(v instanceof Date && !isNaN(v)) return v;
+
+    const s = String(v).trim();
+
+    // Try Date() directly (works for ISO / many formats)
+    const d1 = new Date(s);
+    if(!isNaN(d1)) return d1;
+
+    // Try "YYYY-MM-DD HH:mm:ss" -> "YYYY-MM-DDTHH:mm:ss"
+    const isoish = s.replace(" ", "T");
+    const d2 = new Date(isoish);
+    if(!isNaN(d2)) return d2;
+
+    // Try dd/mm/yyyy or dd-mm-yyyy
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if(m){
+      let dd = Number(m[1]), mm = Number(m[2]), yy = Number(m[3]);
+      if(yy < 100) yy += 2000;
+      const hh = Number(m[4]||0), mi = Number(m[5]||0), ss = Number(m[6]||0);
+      const d3 = new Date(yy, mm-1, dd, hh, mi, ss);
+      if(!isNaN(d3)) return d3;
+    }
+
+    return null;
+  }
+
+  function formatDayKey(date){
+    // YYYY-MM-DD
+    const y = date.getFullYear();
+    const m = String(date.getMonth()+1).padStart(2,"0");
+    const d = String(date.getDate()).padStart(2,"0");
+    return `${y}-${m}-${d}`;
+  }
+
+  /***********************
+   * API
+   ***********************/
+  async function apiPost(payload){
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  }
+
+  async function apiGet(action, params = {}){
+    const u = new URL(API_URL);
+    u.searchParams.set("action", action);
+    Object.entries(params).forEach(([k,v])=> u.searchParams.set(k, v));
+    const res = await fetch(u.toString(), { method:"GET" });
+    return res.json();
+  }
+
+  async function fetchOrders(){
+    const token = getToken();
+    if(!token) throw new Error("Missing admin token");
+
+    const data = await apiGet("orders", { token: token });
+    if(!data.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+  }
+
+  async function fetchProducts(){
+    // Your customer code used: GET ?action=products (no token).
+    const data = await apiGet("products");
+    if(!data.ok) throw new Error(data.error || "Failed to load products");
+
+    // normalize image key
+    return (data.products || []).map(p => ({
+      ...p,
+      img: p.image_url || p.img || ""
+    }));
+  }
+
+  /***********************
+   * NAV / PAGE ROUTING
+   ***********************/
+  function setPage(page){
+    $$(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.page===page));
+
+    $("#dashboardPage").classList.toggle("hide", page!=="dashboard");
+    $("#ordersPage").classList.toggle("hide", page!=="orders");
+    $("#productsPage").classList.toggle("hide", page!=="products");
+    $("#analyticsPage").classList.toggle("hide", page!=="analytics");
+
+    const title = $("#pageTitle");
+    const desc = $("#pageDesc");
+
+    if(page==="dashboard"){ title.textContent="Dashboard"; desc.textContent="Quick overview of orders and revenue."; }
+    if(page==="orders"){ title.textContent="Orders"; desc.textContent="Search, filter, update status, and contact customers."; }
+    if(page==="products"){ title.textContent="Products"; desc.textContent="Add, edit, delete products (Google Sheet)."; }
+    if(page==="analytics"){ title.textContent="Analytics"; desc.textContent="Revenue trends and customer insights."; }
+  }
+
+  /***********************
+   * KPIs
+   ***********************/
+  function computeKPIs(allOrders){
+    const open = allOrders.filter(o => String(o.status||"").toLowerCase() !== "done");
+    const newCount = open.filter(o => String(o.status||"").toLowerCase()==="new").length;
+    const processingCount = open.filter(o => String(o.status||"").toLowerCase()==="processing").length;
+
+    const openRevenue = open.reduce((s,o)=> s + Number(o.total||0), 0);
+    const allRevenue  = allOrders.reduce((s,o)=> s + Number(o.total||0), 0);
+
+    $("#kpiNew").textContent = newCount;
+    $("#kpiProcessing").textContent = processingCount;
+    $("#kpiTotalOpen").textContent = open.length;
+    $("#kpiRevenueOpen").textContent = money(openRevenue);
+    $("#kpiAllCount").textContent = allOrders.length;
+    $("#kpiAllRevenue").textContent = money(allRevenue);
+  }
+
+  /***********************
+   * ORDERS TABLE RENDERING
+   ***********************/
+  function statusBadge(status){
+    const s = String(status||"new").toLowerCase();
+    const cls = (s==="processing") ? "st-processing" : (s==="done" ? "st-done" : "st-new");
+    return `<span class="badge ${cls}">${s}</span>`;
+  }
+
+  function buildOrderRow(o, includeDoneOption=true){
+    const id = o.order_id || "";
+    const created = o.created_at || "";
+    const name = o.name || "";
+    const phone = o.phone || "";
+    const address = o.address || "";
+    const items = o.items || "";
+    const total = o.total || 0;
+    const status = String(o.status||"new").toLowerCase();
+
+    const waMsg = `Pharmaglow Order ${id}\nStatus: ${status}\nTotal: ${total} LE\n\nWe are contacting you to confirm your order.`;
+    const wa = waLink(phone, waMsg);
+
+    return `
+      <tr>
+        <td>
+          <strong>${id}</strong>
+          <div class="muted small">${created}</div>
+        </td>
+        <td>
+          <div><strong>${name}</strong></div>
+          <div class="small">${phone}</div>
+          <div class="muted small">${address}</div>
+          <div style="margin-top:8px">${statusBadge(status)}</div>
+        </td>
+        <td style="white-space:pre-wrap">${items}</td>
+        <td><strong>${money(total)}</strong></td>
+        <td>
+          <select class="select" data-status="${id}" style="min-width:160px">
+            <option value="new" ${status==="new"?"selected":""}>new</option>
+            <option value="processing" ${status==="processing"?"selected":""}>processing</option>
+            ${includeDoneOption ? `<option value="done" ${status==="done"?"selected":""}>done</option>` : ``}
+          </select>
+        </td>
+        <td>
+          <div class="rowActions">
+            <button class="btn ghost" type="button" data-wa="${id}">WhatsApp</button>
+            <button class="btn" type="button" data-save="${id}">Save</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  function bindOrderRowActions(container){
+    // WhatsApp
+    container.querySelectorAll("[data-wa]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-wa");
+        const o = ORDERS_ALL.find(x => String(x.order_id) === String(id));
+        if(!o) return;
+        const status = String(o.status||"new").toLowerCase();
+        const waMsg = `Pharmaglow Order ${o.order_id}\nStatus: ${status}\nTotal: ${o.total} LE\n\nWe are contacting you to confirm your order.`;
+        window.open(waLink(o.phone, waMsg), "_blank", "noopener");
+      });
+    });
+
+    // Save status
+    container.querySelectorAll("[data-save]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const orderId = btn.getAttribute("data-save");
+        const sel = container.querySelector(`[data-status="${CSS.escape(orderId)}"]`);
+        const status = sel ? sel.value : "new";
+
+        try{
+          setStatus("Saving status...");
+          const out = await apiPost({
+            action:"admin_update_order_status",
+            admin_token: getToken(),
+            order_id: orderId,
+            status
+          });
+
+          if(!out.ok) throw new Error(out.error || "Failed");
+
+          // update local
+          const idx = ORDERS_ALL.findIndex(x=> String(x.order_id)===String(orderId));
+          if(idx >= 0) ORDERS_ALL[idx].status = status;
+
+          setStatus("Saved ✓");
+          // refresh UI + KPIs + charts
+          renderDashboardOrders();
+          renderOrdersTable();
+          computeKPIs(ORDERS_ALL);
+          renderAnalytics();
+        }catch(e){
+          console.error(e);
+          setStatus("Save failed. Check token / API.");
+          alert("Save failed: " + (e.message || "Unknown error"));
+        }
+      });
+    });
+  }
+
+  function renderDashboardOrders(){
+    const tbody = $("#ordersBodyDashboard");
+    const open = ORDERS_ALL
+      .filter(o => String(o.status||"").toLowerCase() !== "done")
+      .slice(0, 15);
+
+    if(open.length === 0){
+      tbody.innerHTML = `<tr><td colspan="6" class="muted">No open orders.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = open.map(o => buildOrderRow(o, true)).join("");
+    bindOrderRowActions(tbody);
+  }
+
+  // Filters (Orders page)
+  function getOrdersFiltered(){
+    const q = ($("#searchBox").value || "").trim().toLowerCase();
+    const mode = $("#statusFilter").value;
+
+    const from = $("#fromDate").value ? new Date($("#fromDate").value + "T00:00:00") : null;
+    const to = $("#toDate").value ? new Date($("#toDate").value + "T23:59:59") : null;
+
+    return ORDERS_ALL.filter(o=>{
+      const status = String(o.status||"").toLowerCase();
+      const created = parseCreatedAt(o.created_at);
+
+      // status filter
+      if(mode === "open"){
+        if(status === "done") return false;
+      } else if(mode === "all"){
+        // keep all
+      } else {
+        if(status !== mode) return false;
+      }
+
+      // search filter
+      if(q){
+        const hay = [
+          o.order_id, o.name, o.phone, o.address, o.items, o.total, o.status
+        ].map(x=>String(x||"").toLowerCase()).join(" | ");
+        if(!hay.includes(q)) return false;
+      }
+
+      // date range filter (best effort)
+      if((from || to) && created){
+        if(from && created < from) return false;
+        if(to && created > to) return false;
+      }
+
+      return true;
+    });
+  }
+
+  function renderOrdersTable(){
+    const tbody = $("#ordersBody");
+    const list = getOrdersFiltered();
+
+    if(list.length === 0){
+      tbody.innerHTML = `<tr><td colspan="6" class="muted">No matching orders.</td></tr>`;
+      return;
+    }
+
+    // In Orders page: show rows based on filter; allow done in select always.
+    tbody.innerHTML = list.map(o => buildOrderRow(o, true)).join("");
+    bindOrderRowActions(tbody);
+  }
+
+  /***********************
+   * PRODUCTS
+   ***********************/
+  function productRow(p){
+    const id = p.id || "";
+    const name = p.name_en || "";
+    const cat = p.category || "";
+    const price = p.price ?? "";
+    const active = (p.active === true || String(p.active).toLowerCase()==="true") ? "true" : "false";
+    const img = p.image_url || p.img || "";
+    return `
+      <tr>
+        <td><strong>${id}</strong></td>
+        <td>${name}</td>
+        <td>${cat}</td>
+        <td>${price}</td>
+        <td>${active}</td>
+        <td class="mono small" style="max-width:280px; word-break:break-word">${img}</td>
+        <td>
+          <div class="rowActions">
+            <button class="btn ghost" type="button" data-edit="${id}">Edit</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  function renderProductsTable(){
+    const tbody = $("#productsBody");
+    if(PRODUCTS_ALL.length === 0){
+      tbody.innerHTML = `<tr><td colspan="7" class="muted">No products found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = PRODUCTS_ALL.map(productRow).join("");
+    tbody.querySelectorAll("[data-edit]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-edit");
+        const p = PRODUCTS_ALL.find(x => String(x.id)===String(id));
+        if(!p) return;
+        fillProductForm(p);
+        $("#productMsg").textContent = "Loaded product for editing.";
+      });
+    });
+  }
+
+  /* ✅ FIX 1: fill ALL product fields (desc/ingredients/use EN/AR) */
+  function fillProductForm(p){
+    $("#p_id").value = p.id || "";
+    $("#p_category").value = p.category || "hair";
+    $("#p_name_en").value = p.name_en || "";
+    $("#p_name_ar").value = p.name_ar || "";
+    $("#p_price").value = (p.price ?? "");
+    $("#p_image_url").value = p.image_url || p.img || "";
+    $("#p_active").value = (p.active === true || String(p.active).toLowerCase()==="true") ? "true" : "false";
+
+    $("#p_desc_en").value = p.description_en || "";
+    $("#p_desc_ar").value = p.description_ar || "";
+    $("#p_ing_en").value  = p.ingredients_en  || "";
+    $("#p_ing_ar").value  = p.ingredients_ar  || "";
+    $("#p_use_en").value  = p.how_to_use_en   || "";
+    $("#p_use_ar").value  = p.how_to_use_ar   || "";
+
+    $("#productMsg").textContent = "Loaded product for editing.";
+  }
+
+  /* ✅ FIX 2: clear ALL product fields */
+  function clearProductForm(){
+    [
+      "p_id","p_name_en","p_name_ar","p_price","p_image_url",
+      "p_desc_en","p_desc_ar","p_ing_en","p_ing_ar","p_use_en","p_use_ar"
+    ].forEach(id=>$("#"+id).value="");
+
+    $("#p_category").value="hair";
+    $("#p_active").value="true";
+    $("#productMsg").textContent = "—";
+  }
+
+  async function saveProduct(){
+    const token = getToken();
+    if(!token){ alert("Enter Admin Token first."); return; }
+
+    const product = {
+      id: $("#p_id").value.trim(),
+      category: $("#p_category").value,
+      name_en: $("#p_name_en").value.trim(),
+      name_ar: $("#p_name_ar").value.trim(),
+      price: Number($("#p_price").value || 0),
+      image_url: $("#p_image_url").value.trim(),
+      active: $("#p_active").value === "true",
+      description_en: $("#p_desc_en").value.trim(),
+      description_ar: $("#p_desc_ar").value.trim(),
+      ingredients_en: $("#p_ing_en").value.trim(),
+      ingredients_ar: $("#p_ing_ar").value.trim(),
+      how_to_use_en: $("#p_use_en").value.trim(),
+      how_to_use_ar: $("#p_use_ar").value.trim()
+    };
+
+    if(!product.id){ alert("Product ID is required."); return; }
+    if(!product.name_en){ alert("Name EN is required."); return; }
+
+    try{
+      $("#productMsg").textContent = "Saving...";
+      const out = await apiPost({ action:"admin_upsert_product", admin_token: token, product });
+      if(!out.ok) throw new Error(out.error || "Save failed");
+      $("#productMsg").textContent = "Saved ✓";
+      await reloadProducts();
+    }catch(e){
+      console.error(e);
+      $("#productMsg").textContent = "Save failed.";
+      alert("Save failed: " + (e.message || "Unknown error"));
+    }
+  }
+
+  async function deleteProduct(){
+    const token = getToken();
+    if(!token){ alert("Enter Admin Token first."); return; }
+    const id = $("#p_id").value.trim();
+    if(!id){ alert("Enter Product ID."); return; }
+
+    if(!confirm(`Delete product "${id}"?`)) return;
+
+    try{
+      $("#productMsg").textContent = "Deleting...";
+      const out = await apiPost({ action:"admin_delete_product", admin_token: token, id });
+      if(!out.ok) throw new Error(out.error || "Delete failed");
+      $("#productMsg").textContent = "Deleted ✓";
+      clearProductForm();
+      await reloadProducts();
+    }catch(e){
+      console.error(e);
+      $("#productMsg").textContent = "Delete failed.";
+      alert("Delete failed: " + (e.message || "Unknown error"));
+    }
+  }
+
+  async function reloadProducts(){
+    try{
+      setStatus("Loading products...");
+      PRODUCTS_ALL = await fetchProducts();
+      renderProductsTable();
+      setStatus("Products loaded ✓");
+    }catch(e){
+      console.error(e);
+      setStatus("Products load failed.");
+      alert("Failed to load products. If your API does not have action=products, tell me.");
+    }
+  }
+
+  /***********************
+   * ANALYTICS
+   ***********************/
+  function destroyChart(c){
+    if(c){ try{ c.destroy(); }catch(_){} }
+    return null;
+  }
+
+  function computeRevenueByDay(allOrders, days){
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - (days - 1));
+    start.setHours(0,0,0,0);
+
+    const map = new Map(); // dayKey -> revenue
+    for(let i=0;i<days;i++){
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      map.set(formatDayKey(d), 0);
+    }
+
+    allOrders.forEach(o=>{
+      const d = parseCreatedAt(o.created_at);
+      if(!d) return;
+      if(d < start) return;
+      const key = formatDayKey(d);
+      if(!map.has(key)) return;
+      map.set(key, (map.get(key) || 0) + Number(o.total||0));
+    });
+
+    const labels = Array.from(map.keys());
+    const values = labels.map(k=> map.get(k) || 0);
+    return { labels, values };
+  }
+
+  function computeStatusCounts(allOrders){
+    const counts = { new:0, processing:0, done:0, other:0 };
+    allOrders.forEach(o=>{
+      const s = String(o.status||"new").toLowerCase();
+      if(s==="new") counts.new++;
+      else if(s==="processing") counts.processing++;
+      else if(s==="done") counts.done++;
+      else counts.other++;
+    });
+    return counts;
+  }
+
+  function computeTopCustomers(allOrders){
+    const map = new Map(); // phone -> {name, phone, orders, revenue}
+    allOrders.forEach(o=>{
+      const phone = String(o.phone||"").trim();
+      const name = String(o.name||"").trim();
+      if(!phone && !name) return;
+      const key = phone || name;
+
+      const cur = map.get(key) || { name: name || "Customer", phone: phone || "-", orders: 0, revenue: 0 };
+      cur.orders += 1;
+      cur.revenue += Number(o.total||0);
+      if(name) cur.name = name;
+      if(phone) cur.phone = phone;
+      map.set(key, cur);
+    });
+
+    return Array.from(map.values())
+      .sort((a,b)=> b.revenue - a.revenue)
+      .slice(0, 10);
+  }
+
+  function renderTopCustomers(){
+    const tbody = $("#topCustomersBody");
+    const top = computeTopCustomers(ORDERS_ALL);
+
+    if(top.length === 0){
+      tbody.innerHTML = `<tr><td colspan="4" class="muted">No customer data.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = top.map(c=>`
+      <tr>
+        <td><strong>${c.name}</strong></td>
+        <td>${c.phone}</td>
+        <td>${c.orders}</td>
+        <td><strong>${money(c.revenue)}</strong></td>
+      </tr>
+    `).join("");
+  }
+
+  function renderAnalytics(){
+    // only render when page exists; safe to call always
+    const days = Number($("#rangeSelect")?.value || 14);
+
+    // Revenue by day
+    const rev = computeRevenueByDay(ORDERS_ALL, days);
+    revChart = destroyChart(revChart);
+    const revCtx = $("#revChart")?.getContext("2d");
+    if(revCtx){
+      revChart = new Chart(revCtx, {
+        type: "line",
+        data: {
+          labels: rev.labels,
+          datasets: [{ label: "Revenue (LE)", data: rev.values, tension: 0.25 }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: "#eaf0ff" } } },
+          scales: {
+            x: { ticks: { color: "rgba(234,240,255,.75)" }, grid: { color: "rgba(234,240,255,.08)" } },
+            y: { ticks: { color: "rgba(234,240,255,.75)" }, grid: { color: "rgba(234,240,255,.08)" } }
+          }
+        }
+      });
+    }
+
+    // Status counts
+    const sc = computeStatusCounts(ORDERS_ALL);
+    statusChart = destroyChart(statusChart);
+    const stCtx = $("#statusChart")?.getContext("2d");
+    if(stCtx){
+      statusChart = new Chart(stCtx, {
+        type: "bar",
+        data: {
+          labels: ["new","processing","done","other"],
+          datasets: [{ label: "Orders", data: [sc.new, sc.processing, sc.done, sc.other] }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: "#eaf0ff" } } },
+          scales: {
+            x: { ticks: { color: "rgba(234,240,255,.75)" }, grid: { color: "rgba(234,240,255,.08)" } },
+            y: { ticks: { color: "rgba(234,240,255,.75)" }, grid: { color: "rgba(234,240,255,.08)" }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    renderTopCustomers();
+  }
+
+  /***********************
+   * LOAD / REFRESH
+   ***********************/
+  async function refreshAll(){
+    const token = getToken();
+    if(!token){
+      alert("Please enter Admin Token first.");
+      return;
+    }
+
+    try{
+      setStatus("Loading orders...");
+      ORDERS_ALL = await fetchOrders();
+
+      // default sort by created date desc (best effort)
+      ORDERS_ALL.sort((a,b)=>{
+        const da = parseCreatedAt(a.created_at);
+        const db = parseCreatedAt(b.created_at);
+        if(da && db) return db - da;
+        return String(b.order_id||"").localeCompare(String(a.order_id||""));
+      });
+
+      computeKPIs(ORDERS_ALL);
+      renderDashboardOrders();
+      renderOrdersTable();
+      renderAnalytics();
+
+      setStatus("Refreshed ✓");
+    }catch(e){
+      console.error(e);
+      setStatus("Load failed.");
+      alert("Failed to load orders. Check Admin Token + Web App permissions.\n\n" + (e.message || ""));
+    }
+  }
+
+  /***********************
+   * INIT + EVENTS
+   ***********************/
+  // Nav
+  $$(".nav a").forEach(a=>{
+    a.addEventListener("click", (e)=>{
+      e.preventDefault();
+      setPage(a.dataset.page);
+
+      // lazy refresh charts when opening analytics
+      if(a.dataset.page === "analytics") renderAnalytics();
+    });
+  });
+
+  // Token actions
+  $("#token").value = getToken();
+  $("#saveToken").addEventListener("click", ()=>{
+    setToken($("#token").value.trim());
+    setStatus("Token saved ✓");
+  });
+
+  $("#reloadAll").addEventListener("click", refreshAll);
+  $("#refreshBtn").addEventListener("click", refreshAll);
+
+  // Orders filters
+  $("#applyFilters").addEventListener("click", ()=>{ renderOrdersTable(); });
+  $("#clearFilters").addEventListener("click", ()=>{
+    $("#searchBox").value = "";
+    $("#statusFilter").value = "open";
+    $("#fromDate").value = "";
+    $("#toDate").value = "";
+    renderOrdersTable();
+  });
+  $("#searchBox").addEventListener("input", ()=>{
+    // lightweight live search
+    renderOrdersTable();
+  });
+  $("#statusFilter").addEventListener("change", renderOrdersTable);
+
+  // Products
+  $("#reloadProducts").addEventListener("click", reloadProducts);
+  $("#upsertProduct").addEventListener("click", saveProduct);
+  $("#deleteProduct").addEventListener("click", deleteProduct);
+  $("#clearProductForm").addEventListener("click", clearProductForm);
+
+  // Analytics
+  $("#refreshCharts").addEventListener("click", renderAnalytics);
+  $("#rangeSelect").addEventListener("change", renderAnalytics);
+
+  // Today pill
+  const today = new Date();
+  $("#todayPill").textContent = today.toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+
+  // Default page
+  setPage("dashboard");
+
+  // Auto load if token exists
+  if(getToken()){
+    refreshAll();
+    // products are optional; load when user opens products or clicks reload
+  } else {
+    setStatus("Enter Admin Token to start.");
+    $("#ordersBodyDashboard").innerHTML = `<tr><td colspan="6" class="muted">Enter Admin Token, then click Refresh.</td></tr>`;
+    $("#ordersBody").innerHTML = `<tr><td colspan="6" class="muted">Enter Admin Token, then click Refresh.</td></tr>`;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pharmaglow | Science Meets Nature</title>
+  <meta name="description" content="Pharmaglow by Dr. Mariam Asaad — Natural & pharmaceutical-grade skincare and haircare with transparent ingredients." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- EN + AR font pairing -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- ✅ Smooth scroll + prevent sticky header from hiding sections -->
+  <style>
+    html{ scroll-behavior: smooth; }
+    section{ scroll-margin-top: 120px; } /* عدّلها لو الهيدر أعلى/أقل */
+  </style>
+</head>
+
+<body data-lang="en" data-dir="ltr">
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="#home" aria-label="Pharmaglow Home">
+        <img src="assets/logo.jpeg" alt="Pharmaglow Logo" class="brand__logo">
+        <div class="brand__text">
+          <div class="brand__name">Pharmaglow</div>
+          <div class="brand__tag" data-i18n="brandTag">Science Meets Nature</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a href="#home" data-i18n="navHome">Home</a>
+        <a href="#products" data-i18n="navProducts">Products</a>
+        <a href="#about" data-i18n="navAbout">About</a>
+        <a href="#science" data-i18n="navScience">Science & Ingredients</a>
+        <a href="#order" class="nav__cta" data-i18n="navOrder">Order</a>
+        <a href="#contact" data-i18n="navContact">Contact</a>
+      </nav>
+
+      <div class="actions">
+        <button class="btn btn--ghost" id="langToggle" type="button" aria-label="Toggle language">
+          <span class="badge">EN</span> / <span class="badge">AR</span>
+        </button>
+        <a class="btn btn--primary" href="https://wa.me/201284343786" target="_blank" rel="noopener" data-i18n="whatsAppBtn">WhatsApp</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="home" class="hero">
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <span class="pill" data-i18n="heroPill">Doctor-led • Transparent Ingredients • Pharma-grade</span>
+        <h1 data-i18n="heroTitle">Natural + Pharmaceutical Care, Backed by Science</h1>
+        <p class="muted" data-i18n="heroDesc">
+          Pharmaglow by Dr. Mariam Asaad — skincare & haircare formulas that balance clinical credibility with natural beauty.
+        </p>
+
+        <div class="hero__buttons">
+          <a class="btn btn--primary" href="#products" data-i18n="heroShop">Browse Products</a>
+          <a class="btn btn--ghost" href="#order" data-i18n="heroOrder">Place an Order</a>
+        </div>
+
+        <div class="trust">
+          <div class="trust__item">
+            <div class="trust__icon">✓</div>
+            <div>
+              <div class="trust__title" data-i18n="trust1Title">Transparent Formulas</div>
+              <div class="trust__desc" data-i18n="trust1Desc">Ingredient details shown on product images.</div>
+            </div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__icon">✓</div>
+            <div>
+              <div class="trust__title" data-i18n="trust2Title">Pharma-grade Standards</div>
+              <div class="trust__desc" data-i18n="trust2Desc">Designed for real results with gentle balance.</div>
+            </div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__icon">✓</div>
+            <div>
+              <div class="trust__title" data-i18n="trust3Title">Alexandria, Egypt</div>
+              <div class="trust__desc" data-i18n="trust3Desc">Local support via WhatsApp and email.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__card">
+        <div class="card card--glow">
+          <div class="card__top">
+            <div class="card__title" data-i18n="bestSellers">Best Sellers</div>
+            <div class="card__sub muted" data-i18n="bestSellersSub">Quick add to your order</div>
+          </div>
+          <div class="miniList" id="bestSellersList"></div>
+          <a class="btn btn--primary btn--full" href="#order" data-i18n="goToOrder">Go to Order Form</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Products -->
+  <section id="products" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="productsTitle">Products</h2>
+        <p class="muted" data-i18n="productsDesc">Select products, then submit your order details. We will confirm via WhatsApp or email.</p>
+      </div>
+
+      <div class="filters">
+        <button class="chip is-active" type="button" data-filter="all" data-i18n="filterAll">All</button>
+        <button class="chip" type="button" data-filter="hair" data-i18n="filterHair">Haircare</button>
+        <button class="chip" type="button" data-filter="skin" data-i18n="filterSkin">Skincare</button>
+      </div>
+
+      <div class="grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="section section--soft">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="aboutTitle">About Dr. Mariam Asaad</h2>
+        <p class="muted" data-i18n="aboutDesc">
+          Pharmaglow is built on the principle that nature and pharmaceutical standards can work together—clearly and safely.
+        </p>
+      </div>
+
+      <div class="aboutCard">
+        <div class="aboutCard__left">
+          <h3 data-i18n="aboutCardTitle">Science Meets Nature</h3>
+          <p class="muted" data-i18n="aboutCardBody">
+            We focus on transparent ingredients, practical routines, and formulas designed for consistent results. Each product
+            highlights its ingredients and purpose so you can make informed choices.
+          </p>
+          <div class="bullets">
+            <div class="bullet"><span class="dot"></span><span data-i18n="aboutB1">Transparent ingredient highlights</span></div>
+            <div class="bullet"><span class="dot"></span><span data-i18n="aboutB2">Balanced, gentle formulations</span></div>
+            <div class="bullet"><span class="dot"></span><span data-i18n="aboutB3">Support through WhatsApp and email</span></div>
+          </div>
+        </div>
+        <div class="aboutCard__right">
+          <div class="labelBox">
+            <div class="labelBox__title" data-i18n="quickContact">Quick Contact</div>
+            <div class="labelRow"><span data-i18n="phoneLabel">Phone/WhatsApp</span><a href="tel:01284343786">01284343786</a></div>
+            <div class="labelRow"><span data-i18n="emailLabel">Email</span><a href="mailto:mariamasaadlabib@gmail.com">mariamasaadlabib@gmail.com</a></div>
+            <div class="labelRow"><span data-i18n="locationLabel">Location</span><span data-i18n="locationValue">Alexandria, Egypt</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Science -->
+  <section id="science" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="scienceTitle">Science & Ingredients</h2>
+        <p class="muted" data-i18n="scienceDesc">
+          Clear ingredient communication is part of product safety and trust. Refer to each product image for ingredient details.
+        </p>
+      </div>
+
+      <div class="scienceGrid">
+        <div class="scienceCard">
+          <h3 data-i18n="scienceC1Title">Ingredient Transparency</h3>
+          <p class="muted" data-i18n="scienceC1Body">Your product images include ingredient details so you know what you are using.</p>
+        </div>
+        <div class="scienceCard">
+          <h3 data-i18n="scienceC2Title">Routine-Friendly</h3>
+          <p class="muted" data-i18n="scienceC2Body">Designed for daily or weekly routines without unnecessary complexity.</p>
+        </div>
+        <div class="scienceCard">
+          <h3 data-i18n="scienceC3Title">Practical Guidance</h3>
+          <p class="muted" data-i18n="scienceC3Body">Patch test recommended. If you have a condition, consult a professional.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order -->
+  <section id="order" class="section section--soft">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="orderTitle">Order Form</h2>
+        <p class="muted" data-i18n="orderDesc">Select products and submit your details. Orders are sent to our email.</p>
+      </div>
+
+      <div class="orderLayout">
+        <div class="orderForm card">
+          <form id="orderForm" action="YOUR_FORMSPREE_ENDPOINT" method="POST">
+            <div class="formRow">
+              <label data-i18n="fullName">Full Name</label>
+              <input name="name" type="text" required />
+            </div>
+
+            <div class="formRow">
+              <label data-i18n="phone">Phone / WhatsApp</label>
+              <input name="phone" type="tel" required />
+            </div>
+
+            <div class="formRow">
+              <label data-i18n="cityAddress">City / Address</label>
+              <input name="address" type="text" placeholder="Alexandria..." required />
+            </div>
+
+            <div class="formRow">
+              <label data-i18n="selectedItems">Selected Items</label>
+              <textarea name="items" id="itemsField" rows="6" readonly required></textarea>
+              <div class="hint muted" data-i18n="itemsHint">This field auto-fills from your selections.</div>
+            </div>
+
+            <div class="formRow">
+              <label data-i18n="notes">Notes (optional)</label>
+              <textarea name="notes" rows="4"></textarea>
+            </div>
+
+            <input type="hidden" name="_replyto" value="mariamasaadlabib@gmail.com" />
+            <input type="hidden" name="_subject" value="New Pharmaglow Order" />
+
+            <button class="btn btn--primary btn--full" type="submit" data-i18n="submitOrder">Submit Order</button>
+
+            <div class="formHelp">
+              <a class="btn btn--ghost btn--full" href="https://wa.me/201284343786" target="_blank" rel="noopener" data-i18n="whatsAppFast">
+                Faster confirmation on WhatsApp
+              </a>
+              <p class="muted small" data-i18n="formPrivacy">
+                By submitting, you agree to be contacted to confirm your order details.
+              </p>
+
+              <button class="btn btn--ghost btn--full" type="button" id="mailtoBtn" data-i18n="mailtoFallback">
+                Send via Email App (Fallback)
+              </button>
+            </div>
+          </form>
+
+          <div id="formSuccess" class="toast is-hidden" role="status">
+            <strong data-i18n="orderSentTitle">Order sent.</strong>
+            <span data-i18n="orderSentBody">We will contact you shortly to confirm.</span>
+          </div>
+        </div>
+
+        <aside class="orderSummary card card--glow">
+          <div class="card__top">
+            <div class="card__title" data-i18n="orderSummary">Order Summary</div>
+            <div class="card__sub muted" data-i18n="orderSummarySub">Items you added</div>
+          </div>
+          <div id="cartList" class="cartList"></div>
+          <div class="totals">
+            <div class="totals__row">
+              <span data-i18n="total">Total</span>
+              <strong id="totalPrice">0 LE</strong>
+            </div>
+            <div class="muted small" data-i18n="totalNote">Prices are shown in EGP (LE). Final confirmation via WhatsApp/email.</div>
+          </div>
+          <button class="btn btn--ghost btn--full" id="clearCart" type="button" data-i18n="clearCart">Clear Selections</button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="contactTitle">Contact</h2>
+        <p class="muted" data-i18n="contactDesc">We respond through WhatsApp or email for order confirmation and questions.</p>
+      </div>
+
+      <div class="contactGrid">
+        <div class="contactCard">
+          <div class="contactCard__label" data-i18n="phoneLabel">Phone/WhatsApp</div>
+          <a class="contactCard__value" href="tel:01284343786">01284343786</a>
+          <a class="btn btn--primary btn--full" href="https://wa.me/201284343786" target="_blank" rel="noopener" data-i18n="whatsAppBtn">WhatsApp</a>
+        </div>
+
+        <div class="contactCard">
+          <div class="contactCard__label" data-i18n="emailLabel">Email</div>
+          <a class="contactCard__value" href="mailto:mariamasaadlabib@gmail.com">mariamasaadlabib@gmail.com</a>
+          <a class="btn btn--ghost btn--full" href="mailto:mariamasaadlabib@gmail.com" data-i18n="emailUs">Email Us</a>
+        </div>
+
+        <div class="contactCard">
+          <div class="contactCard__label" data-i18n="locationLabel">Location</div>
+          <div class="contactCard__value" data-i18n="locationValue">Alexandria, Egypt</div>
+          <div class="muted small" data-i18n="locationNote">Delivery/meetup details confirmed after order.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">© <span id="year"></span> Pharmaglow</div>
+      <div class="footer__links">
+        <a href="#products" data-i18n="navProducts">Products</a>
+        <a href="#order" data-i18n="navOrder">Order</a>
+        <a href="#contact" data-i18n="navContact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product Details Modal -->
+  <div class="modal is-hidden" id="productModal" role="dialog" aria-modal="true" aria-label="Product details">
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" type="button" aria-label="Close" data-close-modal>×</button>
+
+      <div class="modal__head">
+        <img class="modal__img" id="pmImg" alt="Product image">
+        <div class="modal__meta">
+          <h3 id="pmTitle" class="modal__title">Product</h3>
+          <div class="modal__priceRow">
+            <span class="modal__price" id="pmPrice">0 LE</span>
+            <button class="btn btn--primary" type="button" id="pmAddBtn">Add to Order</button>
+          </div>
+          <div class="modal__rating" id="pmRating"></div>
+        </div>
+      </div>
+
+      <div class="tabs" id="pmTabs">
+        <button class="tab is-active" type="button" data-tab="desc">Description</button>
+        <button class="tab" type="button" data-tab="ing">Ingredients</button>
+        <button class="tab" type="button" data-tab="use">How to Use</button>
+        <button class="tab" type="button" data-tab="rev">Reviews</button>
+      </div>
+
+      <div class="modal__body">
+        <div class="tabPanel" data-panel="desc">
+          <div class="muted" id="pmDesc"></div>
+        </div>
+        <div class="tabPanel is-hidden" data-panel="ing">
+          <div class="muted" id="pmIng"></div>
+        </div>
+        <div class="tabPanel is-hidden" data-panel="use">
+          <div class="muted" id="pmUse"></div>
+        </div>
+
+        <div class="tabPanel is-hidden" data-panel="rev">
+          <div class="reviews">
+            <div class="reviews__head">
+              <strong id="pmReviewsTitle">Customer Reviews</strong>
+              <span class="muted small" id="pmReviewsCount">—</span>
+            </div>
+
+            <div id="pmReviewsList" class="reviews__list"></div>
+
+            <div class="reviews__form card">
+              <div class="formRow">
+                <label>Your name</label>
+                <input class="inputLike" id="rvName" type="text" placeholder="Name" />
+              </div>
+              <div class="formRow">
+                <label>Rating</label>
+                <select class="inputLike" id="rvStars">
+                  <option value="5">★★★★★ (5)</option>
+                  <option value="4">★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+              <div class="formRow">
+                <label>Review</label>
+                <textarea class="inputLike" id="rvText" rows="4" placeholder="Write your review..."></textarea>
+              </div>
+              <button class="btn btn--primary btn--full" type="button" id="rvSubmit">Submit Review</button>
+              <div class="muted small" id="rvMsg" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
